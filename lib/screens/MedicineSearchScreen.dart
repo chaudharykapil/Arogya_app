@@ -18,12 +18,15 @@ class _medicine_search_state extends State<MedicineSearchScreen>{
   List<String> dis = diseases.keys.toList();
   List<String> sever = severity.keys.toList();
   String ? ans;
+  bool is_start = false;
   _medicine_search_state(){
     inputs = [dis.first,"0",gend.first,sever.first];
     ans = null;
 
   }
   void Analysis()async{
+    is_start = true;
+    setState(() {});
     List<String> ip = ["","","",""];
     ip[0] = diseases[inputs[0]]!;
     ip[1] = inputs[1]!;
@@ -37,6 +40,7 @@ class _medicine_search_state extends State<MedicineSearchScreen>{
         headers: {"Accept": "application/json", "Content-Type": "application/json"}
     );
     ans = json.decode(res.body)["res"];
+    is_start = false;
     setState(() {});
     print(ans);
   }
@@ -44,17 +48,19 @@ class _medicine_search_state extends State<MedicineSearchScreen>{
   Widget build(BuildContext context) {
     // TODO: implement build
     return Scaffold(
-      appBar: AppBar(title: Text("Search Medicine"),elevation: 10,),
+      appBar: AppBar(title: Text("Search Medicine"),elevation: 10,backgroundColor: Color.fromRGBO(255, 227, 181, 1),),
       body: Container(
+        decoration: BoxDecoration(image: DecorationImage(image: AssetImage("assets/icons/page_3_bg.jpg"),opacity: 0.7)),
         width: double.maxFinite,
         height: double.maxFinite,
         child: Column(
           children: [
             Container(
-              padding: EdgeInsets.all(20),
-                child: Center(child: Text("Enter Required detail",style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),),)
+              padding: EdgeInsets.all(30),
+                child: Center(child: Text("Enter Required detail",style: TextStyle(fontSize: 27,fontFamily: "Anton",letterSpacing: 1.97)),)
             ),
             DropdownButton(
+                style: TextStyle(fontFamily: "Iceberg",fontSize: 25,color: Colors.black),
                 value: inputs[0],
                 items: dis.map((e){
                   return DropdownMenuItem(value: e,child: Text(e));
@@ -67,6 +73,7 @@ class _medicine_search_state extends State<MedicineSearchScreen>{
             SizedBox(
               width: 130,
               child: TextField(
+                style: TextStyle(fontFamily: "Iceberg",fontSize: 25,color: Colors.black),
                 decoration: InputDecoration(hintText: "Age"),
                 keyboardType: TextInputType.number,
                 onChanged: (String v){
@@ -78,6 +85,7 @@ class _medicine_search_state extends State<MedicineSearchScreen>{
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 10),
               child: DropdownButton(
+                  style: TextStyle(fontFamily: "Iceberg",fontSize: 25,color: Colors.black),
                   value: inputs[2],
                   items: gend.map((e){
                     return DropdownMenuItem(value: e,child: Text(e));
@@ -89,6 +97,7 @@ class _medicine_search_state extends State<MedicineSearchScreen>{
               ),
             ),
             DropdownButton(
+                style: TextStyle(fontFamily: "Iceberg",fontSize: 25,color: Colors.black),
                 value: inputs[3],
                 items: sever.map((e){
                   return DropdownMenuItem(value: e,child: Text(e));
@@ -99,17 +108,20 @@ class _medicine_search_state extends State<MedicineSearchScreen>{
                 }
             ),
             Container(
-              padding: EdgeInsets.symmetric(vertical: 10),
-              child: ElevatedButton(onPressed: (){ Analysis(); },child: Text("Analysis")),
+              padding: EdgeInsets.symmetric(vertical: 30),
+              child: InkWell(
+                  child: Image.asset("assets/icons/ana_button.png"),
+                  onTap: (){Analysis();},
+                )
             ),
             Container(
-              child: ans!=null?Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+              child: ans!=null?Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Center(child: Text("Suggested Medicine: ",style: TextStyle(fontSize: 15),),),
-                  Center(child: Text(ans!,style: TextStyle(fontWeight: FontWeight.bold,fontSize: 15),),),
+                  Center(child: Text("Suggested Medicine: ",style: TextStyle(fontSize: 25,fontFamily: "Iceberg"),),),
+                  Center(child: Text(ans!,style: TextStyle(fontSize: 25,fontWeight: FontWeight.bold,fontFamily: "Iceberg"),),),
                 ],
-              ):null,
+              ):is_start?CircularProgressIndicator():null,
             )
           ],
         ),

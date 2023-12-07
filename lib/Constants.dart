@@ -32,9 +32,10 @@ final Map<String,int> SymptomMapping = {
 'belching': 29,
 'burning_ache': 30
 };
-final String med_uri = "https://arogyaapi.onrender.com/test-medicine";
-final String disease_uri = "https://arogyaapi.onrender.com/test-disease";
-final String test_uri = "https://arogyaapi.onrender.com/test";
+final String med_uri = "http://192.168.1.38:5000/test-medicine";
+final String disease_uri = "http://192.168.1.38:5000/test-disease";
+final String test_uri = "http://192.168.1.38:5000/test";
+final String image_pred_uri = "http://192.168.1.38:5000/search-image/v2";
 
 final Map<String,String> gender = {
   "Select Gender":"-1",

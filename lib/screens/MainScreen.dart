@@ -20,15 +20,17 @@ class MainScreenState extends State<MainScreen>{
   Widget build(BuildContext context) {
     // TODO: implement build
     return SafeArea(child: Scaffold(
-      bottomNavigationBar: NavigationBar(
-        destinations: [
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Color.fromARGB(255, 253, 190, 1), // <-- This works for fixed
+
+        items: [
           //NavigationDestination(icon: Icon(Icons.home), label: "Home"),
-          NavigationDestination(icon: Icon(Icons.energy_savings_leaf), label: "Search Plant"),
-          NavigationDestination(icon: Icon(Icons.coronavirus), label: "Search Disease"),
-          NavigationDestination(icon: Icon(Icons.medication), label: "Search Medicine")
+          BottomNavigationBarItem(icon:  Image.asset("assets/icons/search_plant.png",height: 50,width: 50,), label: "Search Plant"),
+          BottomNavigationBarItem(icon: Image.asset("assets/icons/search disease.png",height: 50,width: 50,), label: "Search Disease"),
+          BottomNavigationBarItem(icon: Image.asset("assets/icons/search medicine.png",height: 50,width: 50,), label: "Search Medicine")
         ],
-        selectedIndex: curr_page,
-        onDestinationSelected: (c){setState(() {
+        currentIndex: curr_page,
+        onTap: (c){setState(() {
           curr_page = c;
         });},
       ),

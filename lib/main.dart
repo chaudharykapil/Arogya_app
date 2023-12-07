@@ -1,3 +1,4 @@
+import 'package:ayu_care/screens/AboutScreen.dart';
 import 'package:ayu_care/screens/CameraScreen.dart';
 import 'package:ayu_care/screens/MainScreen.dart';
 import 'package:ayu_care/utils/CameraHandler.dart';
@@ -18,8 +19,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ThemeData(
+        primarySwatch: Colors.amber,
+      ),
       debugShowCheckedModeBanner: false,
-      theme:ThemeData(useMaterial3: true),
+     
       // home: AnimatedSplashScreen(
       //   duration: 3000,
       //   splash: MySplash(),
@@ -29,7 +33,8 @@ class MyApp extends StatelessWidget {
       initialRoute: "/main",
       routes: {
         "/main":(context)=>MainScreen(),
-        "/camera":(context)=>CameraScreen(CameraHandler().getBackCamera())
+        "/camera":(context)=>CameraScreen(CameraHandler().getBackCamera()),
+        "/about":(context)=>AboutScreen()
       },
     );
   }

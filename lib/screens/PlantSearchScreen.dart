@@ -1,10 +1,11 @@
 import 'dart:io';
-import 'dart:typed_data';
+import 'package:ayu_care/Constants.dart';
+import 'package:ayu_care/screens/InfoIcon.dart';
 import 'package:camera/camera.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:tflite_flutter/tflite_flutter.dart' as tfl;
 import 'package:image/image.dart' as imageLib;
+import 'package:http/http.dart' as http;
 class PlantSearchScreen extends StatefulWidget{
   @override
   State<StatefulWidget> createState() {
@@ -14,6 +15,7 @@ class PlantSearchScreen extends StatefulWidget{
 }
 class _plant_search_state extends State<PlantSearchScreen>{
   late XFile? image;
+  String? image_res = "";
   _plant_search_state();
   @override
   void initState() {
@@ -21,56 +23,53 @@ class _plant_search_state extends State<PlantSearchScreen>{
     super.initState();
     image = null;
   }
-  // Image tensorBufferToImage(TensorBuffer buffer, int w, int h) {
-  //   List<int> floatList = buffer.getIntList();
-  //   Uint8List uint8list =
-  //   Uint8List.fromList(floatList.map((f) => f.toInt()).toList());
-  //
-  //   int channels = 3;
-  //   Image image = Image(w, h);
-  //   for (int y = 0; y < h; y++) {
-  //     for (int x = 0; x < w; x++) {
-  //       int r = uint8list[y * w * channels + x * channels];
-  //       int g = uint8list[y * w * channels + x * channels + 1];
-  //       int b = uint8list[y * w * channels + x * channels + 2];
-  //       image.setPixel(x, y, getColor(r, g, b));
-  //     }
-  //   }
-  //   return image;
-  // }
-  // Future<void> Predict() async{
-  //   final interpreter = await tfl.Interpreter.fromAsset('assets/model.tflite');
-  //   final image_inp = imageLib.decodeImage(File(image!.path).readAsBytesSync());
-  //   dynamic t = interpreter.getInputTensors();
-  //   Object output = new Object();
-  //   // interpreter.run(image_inp as Object, output);
-  //   print(t[0]);
-  //   return null;
-  // }
+  
+  void Predict() async{
+    image_res = null;
+    setState(() {});
+    Uri url = Uri.parse(image_pred_uri);
+    http.MultipartRequest request = http.MultipartRequest("POST", url);
+    request.files.add(http.MultipartFile.fromBytes("image", File(image!.path).readAsBytesSync(),filename: image!.path));
+    //http.Response res = await http.post(url,body: {});
+    http.StreamedResponse stream  = await request.send();
+    http.Response res = await http.Response.fromStream(stream);
+    print(res.body);
+    image_res = res.body;
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
     return Scaffold(
-      appBar: AppBar(title: Text("Search Plant"),elevation: 10),
+      appBar: AppBar(title: Text("Search Plant"),elevation: 10,backgroundColor: Color.fromRGBO(255, 242, 222, 1),actions: <Widget>[InfoIcon()]),
       body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(image: AssetImage("assets/icons/page_2bg.png"),opacity: 0.2)
+        ),
         height: double.maxFinite,
         width: double.maxFinite,
         child:image == null?
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              ElevatedButton(
-                child:Text("Open Camrera"),
-                onPressed: ()async{
+              
+              InkWell(
+                child:SizedBox(
+                  child: Image.asset("assets/icons/camera.png",scale: 0.8,),
+                ),
+                onTap: ()async{
                   dynamic img = await Navigator.pushNamed(context, "/camera");
                   setState(() {image = img;});
                 },
               ),
-              Center(child: Text("OR"),),
-              ElevatedButton(
-                child: Text("Upload File"),
-                onPressed: ()async{
+              
+              Center(child: Text("Open Camera",style: TextStyle(fontFamily: "Iceberg",fontSize: 25),),),
+
+              InkWell(
+                child:SizedBox(
+                  child: Image.asset("assets/icons/badaal.png",scale: 0.8,),
+                ),onTap: ()async{
                   FilePickerResult? res = await FilePicker.platform.pickFiles(type: FileType.image);
                   if(res != null){
                     setState(() {
@@ -83,16 +82,33 @@ class _plant_search_state extends State<PlantSearchScreen>{
                     });
                   }
                 },
-              )
+              ),
+              Center(child: Text("Upload File",style: TextStyle(fontFamily: "Iceberg",fontSize: 25)),)
             ],
           ):
           Container(
             child: Column(
               children: [
                 Center(
-                  child: Image.file(File(image!.path)),
+                  child: Container(
+                    height: 400,
+                    child: Image.file(File(image!.path)),
+                  )
                 ),
-                ElevatedButton(onPressed: (){}, child: Text("Predict"))
+                ElevatedButton(onPressed: (){Predict();}, child: Text("Predict")),
+                Container(
+                  margin: EdgeInsets.symmetric(vertical: 10),
+                  child: image_res == null?
+                  CircularProgressIndicator()
+                  : Text(
+                    "Result: " + image_res!,
+                    style: TextStyle(
+                      fontSize: 25,
+                      fontFamily: "Iceberg"
+                    ),
+                    
+                  ),
+                )
               ],
             ),
           ),
